@@ -3,6 +3,7 @@ const { ccclass, property } = _decorator;
 
 import { groundMovement } from './groundMovement';
 import { results } from './results';
+import { bird } from './bird';
 
 @ccclass('gameCtrl')
 export class gameCtrl extends Component {
@@ -18,6 +19,11 @@ export class gameCtrl extends Component {
         tooltip: 'Results go here'
     })
     public result: results
+
+      @property({
+        type: bird
+    })
+    public bird: bird;
 
     @property({
         type: CCInteger
@@ -39,6 +45,10 @@ export class gameCtrl extends Component {
 
     initListener(){
         input.on(Input.EventType.KEY_DOWN, this.onKeyDown, this);
+
+        this.node.on(Node.EventType.TOUCH_START, () => {
+            this.bird.fly();
+        })
     }
 
     onKeyDown(event:EventKeyboard){
@@ -51,6 +61,7 @@ export class gameCtrl extends Component {
             break;
             case KeyCode.KEY_Q:
                 this.resetGame();
+                this.bird.resetBird();
         }
     }
 
