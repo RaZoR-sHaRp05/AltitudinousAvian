@@ -130,8 +130,15 @@ export class gameCtrl extends Component {
     }
 
     onBeginContact(selfCollider: Collider2D, otherCollider: Collider2D, contact: IPhysics2DContact | null){
-        this.bird.hitSomething = true;
-        this.clip.onAudioQueue(2);
+        
+        if (otherCollider.tag == 0){
+            this.bird.hitSomething = true;
+            this.clip.onAudioQueue(2);
+        }
+
+        if (otherCollider.tag == 1) {
+            this.passPipe();
+        }
     }
 
     birdStruck(){
