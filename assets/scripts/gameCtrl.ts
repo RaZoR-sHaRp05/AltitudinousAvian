@@ -1,4 +1,4 @@
-import { _decorator, CCInteger, Component, Node, input, Input, EventKeyboard, KeyCode, director } from 'cc';
+import { _decorator, CCInteger, Component, Node, input, Input, EventKeyboard, KeyCode, director, Contact2DType, Collider2D, IPhysics2DContact } from 'cc';
 const { ccclass, property } = _decorator;
 
 import { groundMovement } from './groundMovement';
@@ -40,11 +40,14 @@ export class gameCtrl extends Component {
         type: CCInteger
     })
     public pipeSpeed: number = 300;
+    public isOver: boolean;
 
     onLoad(){
         this.initListener();
 
         this.result.resetScore();
+
+        this.isOver = true;
 
         director.pause();
     }
@@ -53,7 +56,17 @@ export class gameCtrl extends Component {
         input.on(Input.EventType.KEY_DOWN, this.onKeyDown, this);
 
         this.node.on(Node.EventType.TOUCH_START, () => {
-            this.bird.fly();
+
+            if (this.isOver == true){
+                this.resetGame();
+                this.bird.resetBird();
+                this.startGame();
+
+            }
+            
+            if (this.isOver == false) {
+                this.bird.fly();
+            }
         })
     }
 
@@ -78,12 +91,15 @@ export class gameCtrl extends Component {
 
     gameOver(){
         this.result.showResults();
+        this.isOver = true;
         director.pause();
     }
 
     resetGame(){
         this.result.resetScore();
         this.pipeQueue.reset();
+        this.bird.hitSomething = false;
+        this.isOver = false;
         this.startGame();
     }
 
@@ -93,6 +109,32 @@ export class gameCtrl extends Component {
 
     createPipe(){
         this.pipeQueue.addPool();
+    }
+
+    contactGroundPipe(){
+        let collider = this.bird.getComponent(Collider2D);
+
+        if(collider){
+            collider.on(Contact2DType.BEGIN_CONTACT, this.onBeginContact, this);
+        }
+    }
+
+    onBeginContact(selfCollider: Collider2D, otherCollider: Collider2D, contact: IPhysics2DContact | null){
+        this.bird.hitSomething = true;
+    }
+
+    birdStruck(){
+        this.contactGroundPipe();
+
+        if (this.bird.hitSomething == true) {
+            this.gameOver();
+        }
+    }
+
+    update(){
+        if (this.isOver == false){
+            this.birdStruck();
+        }
     }
 }
 
