@@ -5,6 +5,7 @@ import { groundMovement } from './groundMovement';
 import { results } from './results';
 import { bird } from './bird';
 import { PipePool } from './PipePool';
+import { birdAudio } from './birdAudio';
 
 @ccclass('gameCtrl')
 export class gameCtrl extends Component {
@@ -30,6 +31,11 @@ export class gameCtrl extends Component {
         type:PipePool
     })
     public pipeQueue: PipePool
+
+    @property({
+        type:birdAudio
+    })
+    public clip: birdAudio;
 
     @property({
         type: CCInteger
@@ -66,6 +72,7 @@ export class gameCtrl extends Component {
             
             if (this.isOver == false) {
                 this.bird.fly();
+                this.clip.onAudioQueue(0);
             }
         })
     }
@@ -92,6 +99,7 @@ export class gameCtrl extends Component {
     gameOver(){
         this.result.showResults();
         this.isOver = true;
+        this.clip.onAudioQueue(3);
         director.pause();
     }
 
@@ -105,6 +113,7 @@ export class gameCtrl extends Component {
 
     passPipe(){
         this.result.addScore();
+        this.clip.onAudioQueue(1);
     }
 
     createPipe(){
@@ -121,6 +130,7 @@ export class gameCtrl extends Component {
 
     onBeginContact(selfCollider: Collider2D, otherCollider: Collider2D, contact: IPhysics2DContact | null){
         this.bird.hitSomething = true;
+        this.clip.onAudioQueue(2);
     }
 
     birdStruck(){
