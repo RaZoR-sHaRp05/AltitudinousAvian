@@ -83,7 +83,7 @@ export class gameCtrl extends Component {
                 this.gameOver();
             break;
             case KeyCode.KEY_P:
-                this.result.addScore();
+                this.createPipe();
             break;
             case KeyCode.KEY_Q:
                 this.resetGame();
@@ -94,6 +94,7 @@ export class gameCtrl extends Component {
     startGame(){
         this.result.hideResults();
         director.resume();
+        this.schedule(this.createPipe, 3);
     }
 
     gameOver(){
@@ -142,6 +143,7 @@ export class gameCtrl extends Component {
     }
 
     update(){
+
         if (this.isOver == false){
             this.birdStruck();
         }
